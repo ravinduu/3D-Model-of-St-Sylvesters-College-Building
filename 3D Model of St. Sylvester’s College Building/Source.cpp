@@ -14,6 +14,11 @@ void init() {
 
 }
 
+
+void aWall() {
+
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);      // Depth Buffer should be cleared everytime a redraw happens
 
@@ -21,7 +26,64 @@ void display() {
     glRotatef(-30.0f, 1.0f, 0.0f, 0.0f);          //      Rotation of the Coordinate space
     glRotatef(30.0f, 0.0f, 1.0f, 0.0f);           //
 
-    
+
+    // WALL FRONT
+    glBegin(GL_QUADS);
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex3f(-5, 2, -6);
+    glVertex3f(-5, -2, -6);
+    glVertex3f(5, -2, -6);
+    glVertex3f(5, 2, -6);
+    glEnd();
+
+    // WALL BACK
+    glBegin(GL_QUADS);
+    glColor3f(0.4f, 0.3f, 0.5f);
+    glVertex3f(-5, 2, -4);
+    glVertex3f(-5, -2, -4);
+    glVertex3f(5, -2, -4);
+    glVertex3f(5, 2, -4);
+    glEnd();
+
+
+
+    // WALL LEFT
+    glBegin(GL_QUADS);
+    glColor3f(0.0, 1.0, 0.0);
+    glVertex3f(-5, 2, -6);
+    glVertex3f(-5, -2, -6);
+    glVertex3f(-5, -2, -4);
+    glVertex3f(-5, 2, -4);
+    glEnd();
+
+
+    // WALL RIGHT
+    glBegin(GL_QUADS);
+    glColor3f(0.0, 0.0, 1.0);
+    glVertex3f(5, 2, -6);
+    glVertex3f(5, -2, -6);
+    glVertex3f(5, -2, -4);
+    glVertex3f(5, 2, -4);
+    glEnd();
+
+
+    // WALL TOP
+    glBegin(GL_QUADS);
+    glColor3f(1.0, 1.0, 0.0);
+    glVertex3f(-5, 2, -6);
+    glVertex3f(5, 2, -6);
+    glVertex3f(5, 2, -4);
+    glVertex3f(-5, 2, -4);
+    glEnd();
+
+    //WALL BOTTOM
+    glBegin(GL_QUADS);
+    glColor3f(0.0, 1.0, 1.0);
+    glVertex3f(-5, -2, -6);
+    glVertex3f(5, -2, -6);
+    glVertex3f(5, -2, -4);
+    glVertex3f(-5, -2, -4);
+    glEnd();
 
     glPopMatrix();                 
     glutSwapBuffers();
