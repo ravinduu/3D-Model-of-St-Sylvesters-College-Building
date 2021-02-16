@@ -57,6 +57,8 @@ void drawAxes() {
 //draw th grid in x and z axis
 void drawGrid() {
     glPushMatrix();
+    
+    glColor3f(1.0, 1.0, 1.0);
 
     GLfloat ext = xAxes;
     GLfloat step = 1.0f;
@@ -95,9 +97,9 @@ void keyboardSpecial(int key, int x, int y) {
 
 void keyboard(unsigned char key, int x, int y) {
     if (key == 'w')
-        camY += 0.5;
+        camY += 1;
     if (key == 's')
-        camY -= 0.5;
+        camY -= 1;
 
     if (key == 'c')
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -111,9 +113,10 @@ void keyboard(unsigned char key, int x, int y) {
 
 void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GLfloat length) {
     
+
+
     // WALL FRONT
     glBegin(GL_QUADS);
-    glColor3f(1.0, 0.0, 0.0);
     glVertex3f(x, y, z);
     glVertex3f(x, y - height , z);
     glVertex3f(x + width, y - height, z);
@@ -122,7 +125,6 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL BACK
     glBegin(GL_QUADS);
-    glColor3f(0.4f, 0.3f, 0.5f);
     glVertex3f(x, y, z - length);
     glVertex3f(x, y - height, z - length);
     glVertex3f(x + width, y - height, z - length);
@@ -131,7 +133,6 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL LEFT
     glBegin(GL_QUADS);
-    glColor3f(0.0, 1.0, 0.0);
     glVertex3f(x , y, z);
     glVertex3f(x, y - height, z);
     glVertex3f(x, y - height, z - length);
@@ -140,7 +141,6 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL RIGHT
     glBegin(GL_QUADS);
-    glColor3f(0.0, 0.0, 1.0);
     glVertex3f(x + width, y, z);
     glVertex3f(x + width, y - height, z);
     glVertex3f(x + width, y - height, z - length);
@@ -149,7 +149,6 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL TOP
     glBegin(GL_QUADS);
-    glColor3f(1.0, 1.0, 0.0);
     glVertex3f(x, y, z);
     glVertex3f(x + width, y , z);
     glVertex3f(x + width, y, z - length);
@@ -158,7 +157,6 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     //WALL BOTTOM
     glBegin(GL_QUADS);
-    glColor3f(0.0, 1.0, 1.0);
     glVertex3f(x, y - height, z);
     glVertex3f(x + width, y - height , z);
     glVertex3f(x + width, y - height, z - length);
@@ -168,15 +166,7 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
 void drawHexagonalPrism(GLfloat x[], GLfloat z[], GLfloat y, GLfloat h){
     glBegin(GL_QUADS);
-    for (int i1 = 0; i1 < 6; ++i1)
-    {
-        glColor4f(
-            i1 < 2 || i1 > 4 ? 1.0f : 0.0f,
-            i1 > 0 && i1 < 5 ? 1.0f : 0.0f,
-            i1 > 2 ? 1.0f : 0.0f,
-            1.0f
-        );
-
+    for (int i1 = 0; i1 < 6; ++i1){
         int i2 = (i1 + 1) % 6;
         glVertex3f(x[i1], y, z[i1]);
         glVertex3f(x[i2], y, z[i2]);
@@ -184,8 +174,6 @@ void drawHexagonalPrism(GLfloat x[], GLfloat z[], GLfloat y, GLfloat h){
         glVertex3f(x[i1], y + h, z[i1]);
     }
     glEnd();
-
-    glColor4f(1, 1, 1, 1);
 
     glBegin(GL_POLYGON);
     for (int i = 0; i < 6; ++i)
@@ -202,6 +190,8 @@ void drawHexagonalPrism(GLfloat x[], GLfloat z[], GLfloat y, GLfloat h){
 
 void drawRightBuilding() {
     glPushMatrix();
+
+    glColor3f(0.961, 0.871, 0.702);
 
     //columns left to right
     drawCube(15, 5, 6, 4, 5, 0.5);
@@ -235,11 +225,16 @@ void drawRightBuilding() {
     //drawCube(5, 0.5, -6, 4, 0.5, 12);
 
     //window rows top to bottom
+    glPushMatrix();
+    glColor3f(0.502, 0.000, 0.000);
+
     drawCube(15.2, 4.5, 6, 3.6, 1, 12);
     for (GLfloat y = 3; y >= 1.5; y -= 1.5) {
         drawCube(15, y, 6, 3.8, 1, 12);
 
     }
+    glPopMatrix();
+
     //drawCube(5.8, 3, -6, 3, 1, 12);
     //drawCube(5.8, 1.5, -6, 3, 1, 12);
 
@@ -248,6 +243,7 @@ void drawRightBuilding() {
 
 void drawRightSideCornerBuilding() {
     glPushMatrix();
+    glColor3f(0.961, 0.871, 0.702);
 
     //4 corner beams (columns)
     drawCube(15, 7, 10, 1, 7, 1);
@@ -255,14 +251,13 @@ void drawRightSideCornerBuilding() {
     drawCube(18, 7, 7, 1, 7, 1);
     drawCube(15, 7, 7, 1, 7, 1);
 
-    drawCube(15, 7, 9.5, 3.5, 7, 3.5); //core
-
-
     //2 small beams in front and left side (columns)
+
     drawCube(16, 7, 9.8, 0.5, 7, 0.8);//front
     drawCube(17.5, 7, 9.8, 0.5, 7, 0.8);
     drawCube(18, 7, 9, 0.8, 7, 0.5);//right
     drawCube(18, 7, 7.5, 0.8, 7, 0.5);
+   
 
     //wall rows
     //right side (top to bottom)
@@ -277,9 +272,21 @@ void drawRightSideCornerBuilding() {
     drawCube(16.5, 3.5, 9.8, 1, 1, 0.8);
     drawCube(16.5, 0.5, 9.8, 1, 0.5, 0.8);
 
+    glPopMatrix();
+
     //small balcony parts in middle
-    drawCube(15, 5.1, 10, 4, 0.2, 4);
-    drawCube(15, 3.1, 10, 4, 0.2, 4);
+    glPushMatrix();
+    glColor3f(0.502, 0.000, 0.000);
+    drawCube(15.1, 5.1, 9.9, 3.899, 0.2, 3.899);
+    drawCube(15.1, 3.1, 9.9, 3.899, 0.2, 3.899);
+    glPopMatrix();
+
+    //core
+    glPushMatrix();
+    glColor3f(0.502, 0.000, 0.000);
+    drawCube(15.1, 7, 9.5, 3.4, 7, 3.4);
+    glPopMatrix();
+
 
     //draw the hexagon part in the top
     GLfloat x[] = { 16.134f, 16.134f, 17.0f, 17.866f, 17.866f, 17.0f };
@@ -287,26 +294,64 @@ void drawRightSideCornerBuilding() {
     GLfloat y = 7.0f;
     GLfloat h = 1.0f;
 
+
     //draw top balcony
+    glPushMatrix();
+    glColor3f(0.502, 0.000, 0.000);
     drawCube(14.9, 7.1, 10.2, 4.2, 0.1, 4.3);
     drawCube(15.2, 7.4, 9.8, 3.6, 0.4, 0.2);
     drawCube(15.2, 7.4, 9.8, 0.2, 0.4, 3.6);
     drawCube(15.2, 7.4, 6.2, 3.6, 0.4, 0.2);
     drawCube(18.6, 7.4, 9.8, 0.2, 0.4, 3.6);
+    glPopMatrix();
 
     //draw hexagon building on top
+    glPushMatrix();
+    glColor3f(0.961, 0.871, 0.702);
     drawHexagonalPrism(x, z, y, h);
+    glPopMatrix();
 
     //cone roof part on the hexagon
     glPushMatrix();
+    glColor3f(0.412, 0.412, 0.412);
     glTranslatef(17, 8, 8);
     glRotatef(90, -1.0, 0, 0);
     glutSolidCone(0.5, 1.3, 6, 3);
     glutSolidCone(1.3, 1, 6, 3);
     glPopMatrix();
 
-    glPopMatrix();
+}
 
+void drawMiddleRightSideBuilding(){
+    glPushMatrix();
+    //columns
+    glColor3f(0.961, 0.871, 0.702);
+    drawCube(5, 7, 10, 1.5, 7, 4);
+    for (GLfloat x = 8; x <= 12; x += 2) {
+        drawCube(x, 7, 10, 1, 7, 4);
+    }
+    drawCube(14, 7, 10, 1, 7, 4);
+
+    //rows
+    drawCube(5.5, 7, 10, 9.5, 2, 4);
+    drawCube(5.5, 3.5, 10, 9.5, 1, 4);
+    drawCube(5.5, 0.5, 10, 9.5, 0.5, 4);
+
+    //inner right middle
+    drawCube(9, 3, 6, 6, 3, 12.5);
+
+    //windows
+    glColor3f(0.502, 0.000, 0.000);
+    drawCube(5.501, 5, 9.8, 9.498, 1.5, 3.6);
+    drawCube(5.501, 2.5, 9.8, 9.498, 2, 3.6);
+
+    //small line strips
+    glColor3f(0.502, 0.000, 0.000);
+    drawCube(5.001, 6.1, 10.2, 9.998, 0.2, 0.2);
+    drawCube(5.001, 5.5, 10.2, 9.998, 0.2, 0.2);
+    drawCube(5.001, 3.1, 10.2, 9.998, 0.2, 0.2);
+
+    glPopMatrix();
 }
 
 void display() {
@@ -323,18 +368,21 @@ void display() {
     glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
 
 
-    glColor3f(1.0, 1.0, 1.0);
-
+    
     drawRightBuilding();
     drawRightSideCornerBuilding();
-    drawCube(5, 6, 10, 10, 6, 4);//front right
+    drawMiddleRightSideBuilding();
 
-    
-    drawCube(5, 5, 6, 4, 5, 12.5);//inner left middle
-    drawCube(9, 3, 6, 6, 3, 12.5);//inner right middle
     drawCube(-7, 5, 10, 12, 5, 4);//front center
+
+
+    /*
+    drawCube(5, 5, 6, 4, 5, 12.5);//inner left middle
+
     drawCube(-10, 5, 10, 4, 5, 16.5);//right
     drawCube(-10, 5, -6.5, 19, 5, 4);//back
+    */
+
 
 
     drawGrid(); //draw the grids
@@ -351,7 +399,7 @@ void changeSize(GLsizei w, GLsizei h) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluPerspective(120.0, aspect_ratio, 1.0, 100.0);
+    gluPerspective(110.0, aspect_ratio, 1.0, 100.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -363,7 +411,7 @@ int main(int argc, char** argv) {
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowSize(1000, 500);
+    glutInitWindowSize(1500, 1500);
     glutInitWindowPosition(150, 150);
     glutCreateWindow("St. Sylvester's College Building");
     glutDisplayFunc(display);
