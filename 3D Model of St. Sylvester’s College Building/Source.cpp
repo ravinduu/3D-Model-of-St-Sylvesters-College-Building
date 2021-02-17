@@ -1,6 +1,8 @@
 #include <iostream>
 #include <GL/glut.h>
 
+using namespace std;
+
 
 //variables of xzy axes
 GLfloat xAxes = 20;
@@ -23,10 +25,50 @@ GLfloat camY = 0.0f;
 GLfloat camZ = 0.0f;
 
 
+void initLighting() {
+    GLfloat L0_Ambient[] = { 0.2, 0.2, 0.2, 1.0 };
+    GLfloat L0_Diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
+    GLfloat L0_Specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat L0_postion[] = { 125, 125, 0, 1.0 };
+    //GLfloat L0_SpotDirection[] = { 0.0, -1.0, -1.0 };
+
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, L0_Ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, L0_Diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, L0_Specular);
+    glLightfv(GL_LIGHT0, GL_POSITION, L0_postion);
+
+    GLfloat specularReflectance[] = { 1.0, 1.0, 1.0, 1.0 };
+    glMaterialfv(GL_FRONT, GL_SPECULAR, specularReflectance);
+    glMateriali(GL_FRONT, GL_SHININESS, 50);
+}
+
+
 void init() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glEnable(GL_DEPTH_TEST);                // Enable the Depth testig in openGL
+    GLfloat globalAmbient[] = { 0.4, 0.4, 0.4, 1.0 };
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-1, 1, -1, 1, -3.0, 3.0);
     
+    glEnable(GL_DEPTH_TEST);     
+
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    glEnable(GL_LIGHTING);
+
+    glShadeModel(GL_SMOOTH);
+
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
+
+    (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+    initLighting();
+
+    glEnable(GL_COLOR_MATERIAL);
+
+    glEnable(GL_LIGHT0);
+
+    glEnable(GL_NORMALIZE);
 }
 
 
@@ -106,17 +148,28 @@ void keyboard(unsigned char key, int x, int y) {
     if (key == 'C')
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+        if (key == 'k')
+        glDisable(GL_LIGHT0);
+    if (key == 'K')
+        glEnable(GL_LIGHT0);
+
+
     glutPostRedisplay();
 
 }
 
 
-void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GLfloat length) {
-    
-
+void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GLfloat length, GLfloat r, GLfloat b, GLfloat g) {
 
     // WALL FRONT
     glBegin(GL_QUADS);
+    if (r == 0 && g == 0 && b == 0) {
+        glColor3f(1.000, 0.922, 0.804);
+    }
+    else {
+        glColor3f(r, g, b);
+    }
+    glNormal3f(0.0, 0.0, 1.0);
     glVertex3f(x, y, z);
     glVertex3f(x, y - height , z);
     glVertex3f(x + width, y - height, z);
@@ -125,6 +178,13 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL BACK
     glBegin(GL_QUADS);
+    if (r == 0 && g == 0 && b == 0) {
+        glColor3f(1.000, 0.871, 0.678);
+    }
+    else {
+        glColor3f(r, g, b);
+    }
+    glNormal3f(0.0, 0.0, 1.0);
     glVertex3f(x, y, z - length);
     glVertex3f(x, y - height, z - length);
     glVertex3f(x + width, y - height, z - length);
@@ -133,7 +193,13 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL LEFT
     glBegin(GL_QUADS);
-    glVertex3f(x , y, z);
+    if (r == 0 && g == 0 && b == 0) {
+        glColor3f(0.871, 0.722, 0.529);
+    }
+    else {
+        glColor3f(r, g, b);
+    }
+    glVertex3f(x, y, z);
     glVertex3f(x, y - height, z);
     glVertex3f(x, y - height, z - length);
     glVertex3f(x, y, z - length);
@@ -141,6 +207,13 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL RIGHT
     glBegin(GL_QUADS);
+    if (r == 0 && g == 0 && b == 0) {
+        glColor3f(0.957, 0.643, 0.376);
+    }
+    else {
+        glColor3f(r, g, b);
+    }
+    glNormal3f(0.0, 0.0, 1.0);
     glVertex3f(x + width, y, z);
     glVertex3f(x + width, y - height, z);
     glVertex3f(x + width, y - height, z - length);
@@ -149,14 +222,28 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
     // WALL TOP
     glBegin(GL_QUADS);
+    if (r == 0 && g == 0 && b == 0) {
+        glColor3f(0.722, 0.525, 0.043);
+    }
+    else {
+        glColor3f(r, g, b);
+    }
+    glNormal3f(0.0, 0.0, 1.0);
     glVertex3f(x, y, z);
-    glVertex3f(x + width, y , z);
+    glVertex3f(x + width, y, z);
     glVertex3f(x + width, y, z - length);
     glVertex3f(x, y, z - length);
     glEnd();
 
     //WALL BOTTOM
     glBegin(GL_QUADS);
+    if (r != 0 && g != 0 && b != 0) {
+        glColor3f(r, g, b);
+    }
+    else {
+        glColor3f(0.824, 0.412, 0.118);
+    }
+    glNormal3f(0.0, 0.0, 1.0);
     glVertex3f(x, y - height, z);
     glVertex3f(x + width, y - height , z);
     glVertex3f(x + width, y - height, z - length);
@@ -166,6 +253,7 @@ void drawCube(GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height, GL
 
 void drawHexagonalPrism(GLfloat x[], GLfloat z[], GLfloat y, GLfloat h){
     glBegin(GL_QUADS);
+    glNormal3f(0.0, 0.0, 1.0);
     for (int i1 = 0; i1 < 6; ++i1){
         int i2 = (i1 + 1) % 6;
         glVertex3f(x[i1], y, z[i1]);
@@ -176,11 +264,13 @@ void drawHexagonalPrism(GLfloat x[], GLfloat z[], GLfloat y, GLfloat h){
     glEnd();
 
     glBegin(GL_POLYGON);
+    glNormal3f(0.0, 0.0, 1.0);
     for (int i = 0; i < 6; ++i)
         glVertex3f(x[i], y, z[i]);
     glEnd();
 
     glBegin(GL_POLYGON);
+    glNormal3f(0.0, 0.0, 1.0);
     for (int i = 0; i < 6; ++i)
         glVertex3f(x[i], y + h, z[i]);
     glEnd();
@@ -191,33 +281,31 @@ void drawHexagonalPrism(GLfloat x[], GLfloat z[], GLfloat y, GLfloat h){
 void drawRightBuilding() {
     glPushMatrix();
 
-    glColor3f(0.961, 0.871, 0.702);
-
     //columns left to right
-    drawCube(15, 5, 6, 4, 5, 0.5);
+    drawCube(15, 5, 6, 4, 5, 0.5, 0 , 0, 0);
 
-    drawCube(15, 5, 4.5, 4, 5, 0.5);
-    drawCube(15, 5.5, 4, 4, 5.5, 0.5);
+    drawCube(15, 5, 4.5, 4, 5, 0.5, 0 , 0, 0);
+    drawCube(15, 5.5, 4, 4, 5.5, 0.5, 0 , 0, 0);
 
-    drawCube(15, 5.5, 2.5, 4, 5.5, 0.5);
-    drawCube(15, 6, 2, 4, 6, 0.5);
+    drawCube(15, 5.5, 2.5, 4, 5.5, 0.5, 0 , 0, 0);
+    drawCube(15, 6, 2, 4, 6, 0.5, 0 , 0, 0);
 
-    drawCube(15, 6, 0, 4, 6, 1.0); //center
+    drawCube(15, 6, 0, 4, 6, 1.0, 0 , 0, 0); //center
 
-    drawCube(15, 6, -2, 4, 6, 0.5);
-    drawCube(15, 5.5, -2.5, 4, 5.5, 0.5);
+    drawCube(15, 6, -2, 4, 6, 0.5, 0 , 0, 0);
+    drawCube(15, 5.5, -2.5, 4, 5.5, 0.5, 0 , 0, 0);
 
-    drawCube(15, 5, -4.5, 4, 5, 0.5);
-    drawCube(15, 5.5, -4, 4, 5.5, 0.5);
+    drawCube(15, 5, -4.5, 4, 5, 0.5, 0 , 0, 0);
+    drawCube(15, 5.5, -4, 4, 5.5, 0.5, 0 , 0, 0);
 
-    drawCube(15, 5, -6, 4, 5, 0.5);
+    drawCube(15, 5, -6, 4, 5, 0.5, 0 , 0, 0);
 
     //rows top to bottom
-    drawCube(15, 6, -2, 4, 0.5, -4); //top two rows
-    drawCube(15, 5.5, -4, 4, 0.5, -8);
+    drawCube(15, 6, -2, 4, 0.5, -4, 0 , 0, 0); //top two rows
+    drawCube(15, 5.5, -4, 4, 0.5, -8, 0 , 0, 0);
 
-    for (GLfloat y = 5; y >= 0.5; y -= 1.5) {
-        drawCube(15, y, 6, 4, 0.5, 12);
+    for (GLfloat y = 5; y >= 0.5; y -= 1.5, 0 , 0, 0) {
+        drawCube(15, y, 6, 4, 0.5, 12, 0 , 0, 0);
 
     }
     //drawCube(5, 3.5, -6, 4, 0.5, 12);
@@ -226,11 +314,10 @@ void drawRightBuilding() {
 
     //window rows top to bottom
     glPushMatrix();
-    glColor3f(0.502, 0.000, 0.000);
 
-    drawCube(15.2, 4.5, 6, 3.6, 1, 12);
+    drawCube(15.2, 4.5, 6, 3.6, 1, 12, 0.412, 0.412, 0.412);
     for (GLfloat y = 3; y >= 1.5; y -= 1.5) {
-        drawCube(15, y, 6, 3.8, 1, 12);
+        drawCube(15, y, 6, 3.8, 1, 12, 0.412, 0.412, 0.412);
 
     }
     glPopMatrix();
@@ -243,48 +330,45 @@ void drawRightBuilding() {
 
 void drawRightSideCornerBuilding() {
     glPushMatrix();
-    glColor3f(0.961, 0.871, 0.702);
 
     //4 corner beams (columns)
-    drawCube(15, 7, 10, 1, 7, 1);
-    drawCube(18, 7, 10, 1, 7, 1);
-    drawCube(18, 7, 7, 1, 7, 1);
-    drawCube(15, 7, 7, 1, 7, 1);
+    drawCube(15, 7, 10, 1, 7, 1 , 0 , 0, 0);
+    drawCube(18, 7, 10, 1, 7, 1 , 0 , 0, 0);
+    drawCube(18, 7, 7, 1, 7, 1 , 0 , 0, 0);
+    drawCube(15, 7, 7, 1, 7, 1 , 0 , 0, 0);
 
     //2 small beams in front and left side (columns)
 
-    drawCube(16, 7, 9.8, 0.5, 7, 0.8);//front
-    drawCube(17.5, 7, 9.8, 0.5, 7, 0.8);
-    drawCube(18, 7, 9, 0.8, 7, 0.5);//right
-    drawCube(18, 7, 7.5, 0.8, 7, 0.5);
+    drawCube(16, 7, 9.8, 0.5, 7, 0.8, 0 , 0, 0);//front
+    drawCube(17.5, 7, 9.8, 0.5, 7, 0.8, 0 , 0, 0);
+    drawCube(18, 7, 9, 0.8, 7, 0.5, 0 , 0, 0);//right
+    drawCube(18, 7, 7.5, 0.8, 7, 0.5, 0 , 0, 0);
    
 
     //wall rows
     //right side (top to bottom)
-    drawCube(18, 7, 8.5, 0.8, 0.5, 1);
-    drawCube(18, 5.5, 8.5, 0.8, 1, 1);
-    drawCube(18, 3.5, 8.5, 0.8, 1, 1);
-    drawCube(18, 0.5, 8.5, 0.8, 0.5, 1);
+    drawCube(18, 7, 8.5, 0.8, 0.5, 1, 0 , 0, 0);
+    drawCube(18, 5.5, 8.5, 0.8, 1, 1, 0 , 0, 0);
+    drawCube(18, 3.5, 8.5, 0.8, 1, 1, 0 , 0, 0);
+    drawCube(18, 0.5, 8.5, 0.8, 0.5, 1, 0 , 0, 0);
 
     //front side (top to bottom)
-    drawCube(16.5, 7, 9.8, 1, 0.5, 0.8);
-    drawCube(16.5, 5.5, 9.8, 1, 1, 0.8);
-    drawCube(16.5, 3.5, 9.8, 1, 1, 0.8);
-    drawCube(16.5, 0.5, 9.8, 1, 0.5, 0.8);
+    drawCube(16.5, 7, 9.8, 1, 0.5, 0.8, 0 , 0, 0);
+    drawCube(16.5, 5.5, 9.8, 1, 1, 0.8, 0 , 0, 0);
+    drawCube(16.5, 3.5, 9.8, 1, 1, 0.8, 0 , 0, 0);
+    drawCube(16.5, 0.5, 9.8, 1, 0.5, 0.8, 0 , 0, 0);
 
     glPopMatrix();
 
     //small balcony parts in middle
     glPushMatrix();
-    glColor3f(0.502, 0.000, 0.000);
-    drawCube(15.1, 5.1, 9.9, 3.899, 0.2, 3.899);
-    drawCube(15.1, 3.1, 9.9, 3.899, 0.2, 3.899);
+    drawCube(15.1, 5.1, 9.9, 3.899, 0.2, 3.899, 0.502, 0.000, 0.000);
+    drawCube(15.1, 3.1, 9.9, 3.899, 0.2, 3.899, 0.502, 0.000, 0.000);
     glPopMatrix();
 
     //core
     glPushMatrix();
-    glColor3f(0.502, 0.000, 0.000);
-    drawCube(15.1, 7, 9.5, 3.4, 7, 3.4);
+    drawCube(15.1, 7, 9.5, 3.4, 7, 3.4, 0.412, 0.412, 0.412);
     glPopMatrix();
 
 
@@ -298,11 +382,11 @@ void drawRightSideCornerBuilding() {
     //draw top balcony
     glPushMatrix();
     glColor3f(0.502, 0.000, 0.000);
-    drawCube(14.9, 7.1, 10.2, 4.2, 0.1, 4.3);
-    drawCube(15.2, 7.4, 9.8, 3.6, 0.4, 0.2);
-    drawCube(15.2, 7.4, 9.8, 0.2, 0.4, 3.6);
-    drawCube(15.2, 7.4, 6.2, 3.6, 0.4, 0.2);
-    drawCube(18.6, 7.4, 9.8, 0.2, 0.4, 3.6);
+    drawCube(14.9, 7.1, 10.2, 4.2, 0.1, 4.3, 0.502, 0.000, 0.000);
+    drawCube(15.2, 7.4, 9.8, 3.6, 0.4, 0.2, 0.502, 0.000, 0.000);
+    drawCube(15.2, 7.4, 9.8, 0.2, 0.4, 3.6, 0.502, 0.000, 0.000);
+    drawCube(15.2, 7.4, 6.2, 3.6, 0.4, 0.2, 0.502, 0.000, 0.000);
+    drawCube(18.6, 7.4, 9.8, 0.2, 0.4, 3.6, 0.502, 0.000, 0.000);
     glPopMatrix();
 
     //draw hexagon building on top
@@ -325,41 +409,69 @@ void drawRightSideCornerBuilding() {
 void drawMiddleRightSideBuilding(){
     glPushMatrix();
     //columns
-    glColor3f(0.961, 0.871, 0.702);
-    drawCube(5, 7, 10, 1.5, 7, 4);
+    drawCube(5, 7, 10, 1.5, 7, 4, 0, 0, 0);
     for (GLfloat x = 8; x <= 12; x += 2) {
-        drawCube(x, 7, 10, 1, 7, 4);
+        drawCube(x, 7, 10, 1, 7, 4, 0, 0, 0);
     }
-    drawCube(14, 7, 10, 1, 7, 4);
+    drawCube(14, 7, 10, 1, 7, 4, 0, 0, 0);
 
     //rows
-    drawCube(5.5, 7, 10, 9.5, 2, 4);
-    drawCube(5.5, 3.5, 10, 9.5, 1, 4);
-    drawCube(5.5, 0.5, 10, 9.5, 0.5, 4);
+    drawCube(5.5, 7, 10, 9.5, 2, 4, 0, 0, 0);
+    drawCube(5.5, 3.5, 10, 9.5, 1, 4, 0, 0, 0);
+    drawCube(5.5, 0.5, 10, 9.5, 0.5, 4, 0, 0, 0);
 
     //inner right middle
-    drawCube(9, 3, 6, 6, 3, 12.5);
+    drawCube(9, 3, 6, 6, 3, 12.5, 0, 0, 0);
 
     //windows
-    glColor3f(0.502, 0.000, 0.000);
-    drawCube(5.501, 5, 9.8, 9.498, 1.5, 3.6);
-    drawCube(5.501, 2.5, 9.8, 9.498, 2, 3.6);
+    drawCube(5.501, 5, 9.8, 9.498, 1.5, 3.6, 0.412, 0.412, 0.412);
+    drawCube(5.501, 2.5, 9.8, 9.498, 2, 3.6, 0.412, 0.412, 0.412);
 
     //small line strips
-    glColor3f(0.502, 0.000, 0.000);
-    drawCube(5.001, 6.1, 10.2, 9.998, 0.2, 0.2);
-    drawCube(5.001, 5.5, 10.2, 9.998, 0.2, 0.2);
-    drawCube(5.001, 3.1, 10.2, 9.998, 0.2, 0.2);
+    drawCube(5.001, 6.1, 10.2, 9.998, 0.2, 0.2, 0.502, 0.000, 0.000);
+    drawCube(5.001, 5.5, 10.2, 9.998, 0.2, 0.2, 0.502, 0.000, 0.000);
+    drawCube(5.001, 3.1, 10.2, 9.998, 0.2, 0.2, 0.502, 0.000, 0.000);
 
     glPopMatrix();
 }
 
+void drawFrontMiddleBuilding() {
+    glPushMatrix();
+
+    //wall columns
+    drawCube(-7, 5, 10, 1, 5, 4, 0, 0.000, 0.000);//front center
+    drawCube(-5, 5, 10, 0.5, 2.5, 3.5, 0, 0.000, 0.000);
+    for (GLfloat x = -3.5; x <= 4.5; x += 2) {
+        GLfloat w = x == 0.5 ? 3.5 : 4;
+        drawCube(x, 5, 10, 0.5, 5, w, 0, 0.000, 0.000);
+    }
+
+    //wall rows
+    drawCube(-7, 5, 10, 12, 0.5, 4, 0, 0.000, 0.000);
+    drawCube(-7, 3.5, 10, 12, 1, 4, 0, 0.000, 0.000);
+    drawCube(-3.5, 0.5, 10, 8, 0.5, 4, 0, 0.000, 0.000);
+
+    //windows
+    drawCube(-6.99, 4.5, 9.8, 11.899, 1, 3.5, 0.412, 0.412, 0.412);
+    drawCube(-6.99, 4.5, 9.8, 11.899, 1, 3.5, 0.412, 0.412, 0.412);
+    drawCube(-3.49, 2.5, 9.8, 8.399, 2, 3.5, 0.412, 0.412, 0.412);
+
+    //small line
+    drawCube(-7, 3.1, 10.2, 12, 0.2, 0.2, 0.502, 0.000, 0.000);
+
+    //balcony
+    //drawCube(-7, 3.1, 6, 12, 0.2, 2, 0.502, 0.000, 0.000);
+    glPopMatrix();
+
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);      // Depth Buffer should be cleared everytime a redraw happens
+    
     glPushMatrix();
 
     //camera position
-    gluLookAt(0.0 + camX, 2.0 + camY, 5.0 + camZ, 0, 0, 0, 0, 1.0, 0);
+    gluLookAt(0.0 + camX, 30.0 + camY, 30.0 + camZ, 0, 0, 0, 0, 1.0, 0);
 
     // move the object frame using keyboard keys
     glTranslatef(moveX, moveY, moveZ);
@@ -372,16 +484,14 @@ void display() {
     drawRightBuilding();
     drawRightSideCornerBuilding();
     drawMiddleRightSideBuilding();
+    drawFrontMiddleBuilding();
 
-    drawCube(-7, 5, 10, 12, 5, 4);//front center
 
-
-    /*
-    drawCube(5, 5, 6, 4, 5, 12.5);//inner left middle
-
-    drawCube(-10, 5, 10, 4, 5, 16.5);//right
-    drawCube(-10, 5, -6.5, 19, 5, 4);//back
-    */
+    
+    //drawCube(5, 5, 6, 4, 5, 12.5, 0, 0, 0);//inner left middle
+    //drawCube(-10, 5, 10, 4, 5, 16.5, 0, 0, 0);//right
+    //drawCube(-10, 5, -6.5, 19, 5, 4, 0, 0, 0);//back
+    
 
 
 
@@ -399,7 +509,7 @@ void changeSize(GLsizei w, GLsizei h) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    gluPerspective(110.0, aspect_ratio, 1.0, 100.0);
+    gluPerspective(45.0, aspect_ratio, 1.0, 100.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
