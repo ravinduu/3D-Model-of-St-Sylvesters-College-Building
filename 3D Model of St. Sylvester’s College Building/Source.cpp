@@ -1,8 +1,15 @@
 #include <iostream>
+#include <stdlib.h>
+#include <fstream>
 #include <GL/glut.h>
 
 using namespace std;
 
+struct BitMapFile{
+    int sizeX;
+    int sizeY;
+    unsigned char* data;
+};
 
 //variables of xzy axes
 GLfloat xAxes = 20;
@@ -27,6 +34,73 @@ GLfloat camZ = 0.0f;
 //variables for show grid and axes
 GLboolean showGrid = false;
 GLboolean showAxes = false;
+
+static unsigned int texture[2];
+
+BitMapFile* getbmp(string filename) {
+    int offset, headerSize;
+
+    BitMapFile* bmpRGB = new BitMapFile;
+    BitMapFile* bmpRGBA = new BitMapFile;
+
+    ifstream infile(filename.c_str(), ios::binary);
+
+    infile.seekg(10);
+    infile.read((char*)&offset, 4);
+
+    infile.read((char*)&headerSize, 4);
+
+    infile.seekg(18);
+    infile.read((char*)&bmpRGB->sizeX, 4);
+    infile.read((char*)&bmpRGB->sizeY, 4);
+
+    int padding = (3 * bmpRGB->sizeX) % 4 ? 4 - (3 * bmpRGB->sizeX) % 4 : 0;
+    int sizeScanline = 3 * bmpRGB->sizeX + padding;
+    int sizeStorage = sizeScanline * bmpRGB->sizeY;
+    bmpRGB->data = new unsigned char[sizeStorage];
+
+    infile.seekg(offset);
+    infile.read((char*)bmpRGB->data, sizeStorage);
+
+    int startScanline, endScanlineImageData, temp;
+    for (int y = 0; y < bmpRGB->sizeY; y++)
+    {
+        startScanline = y * sizeScanline;
+        endScanlineImageData = startScanline + 3 * bmpRGB->sizeX;
+        for (int x = startScanline; x < endScanlineImageData; x += 3)
+        {
+            temp = bmpRGB->data[x];
+            bmpRGB->data[x] = bmpRGB->data[x + 2];
+            bmpRGB->data[x + 2] = temp;
+        }
+    }
+
+    bmpRGBA->sizeX = bmpRGB->sizeX;
+    bmpRGBA->sizeY = bmpRGB->sizeY;
+    bmpRGBA->data = new unsigned char[4 * bmpRGB->sizeX * bmpRGB->sizeY];
+
+    for (int j = 0; j < 4 * bmpRGB->sizeY * bmpRGB->sizeX; j += 4)
+    {
+        bmpRGBA->data[j] = bmpRGB->data[(j / 4) * 3];
+        bmpRGBA->data[j + 1] = bmpRGB->data[(j / 4) * 3 + 1];
+        bmpRGBA->data[j + 2] = bmpRGB->data[(j / 4) * 3 + 2];
+        bmpRGBA->data[j + 3] = 0xFF;
+    }
+    return bmpRGBA;
+}
+
+void loadExternalTextures() {
+    BitMapFile* image[2];
+    image[0] = getbmp("textures/roof.bmp");
+
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image[0]->sizeX, image[0]->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image[0]->data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+}
 
 
 void initLighting() {
@@ -55,7 +129,7 @@ void init() {
     glLoadIdentity();
     glOrtho(-1, 1, -1, 1, -3.0, 3.0);
     
-    glEnable(GL_DEPTH_TEST);     
+    glEnable(GL_DEPTH_TEST);
 
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
     glEnable(GL_LIGHTING);
@@ -71,6 +145,10 @@ void init() {
     glEnable(GL_COLOR_MATERIAL);
 
     glEnable(GL_LIGHT0);
+
+    glGenTextures(2, texture);
+    loadExternalTextures();
+    glEnable(GL_TEXTURE_2D);
 
     glEnable(GL_NORMALIZE);
 }
@@ -694,17 +772,35 @@ void display() {
     glRotatef(rotY, 0.0f, 1.0f, 0.0f);
     glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
 
-    drawRightBuilding();
-    drawRightSideCornerBuilding();
-    drawMiddleRightSideBuilding();
-    drawFrontMiddleBuilding();
-    drawFrontLeftBuilding();
-    drawLefttBuilding();
-    drawBackBuilding();
-    drawInnerRightMiddleBuilding();
-    drawBalcony();
-    drawStairs();
+    //drawRightBuilding();
+    //drawRightSideCornerBuilding();
+    //drawMiddleRightSideBuilding();
+    //drawFrontMiddleBuilding();
+    //drawFrontLeftBuilding();
+    //drawLefttBuilding();
+    //drawBackBuilding();
+    //drawInnerRightMiddleBuilding();
+    //drawBalcony();
+    //drawStairs();
 
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0); glVertex3f(1, 0, 0);
+    glTexCoord2f(1.0, 0.0); glVertex3f(10, 0, 0);
+    glTexCoord2f(1.0, 1.0); glVertex3f(10, 0, -10);
+    glTexCoord2f(0.0, 1.0); glVertex3f(1,0, -10);
+    glEnd();
+    glPopMatrix();
+
+    ////floor
+    //drawCube(-12, 0.0, 13, 32, 0.2, 25, 0, 0, 0);
+
+    ////courtyard
+    //glPushMatrix();
+    //glTranslatef(-5, 0, 5);
+    //drawCube(0, 0.3, 0, 5, 0.3, 10, 1, 0.0, 0.0);
+    //glPopMatrix();
 
     if(showGrid)
         drawGrid(); //draw the grids
