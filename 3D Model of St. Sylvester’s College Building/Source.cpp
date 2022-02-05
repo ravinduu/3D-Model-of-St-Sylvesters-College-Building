@@ -460,8 +460,6 @@ void drawFrontMiddleBuilding() {
     //small line
     drawCube(-7, 3.1, 10.2, 12, 0.2, 0.2, 0.502, 0.000, 0.000);
 
-    //balcony
-    //drawCube(-7, 3.1, 6, 12, 0.2, 2, 0.502, 0.000, 0.000);
     glPopMatrix();
 
 }
@@ -575,7 +573,6 @@ void drawBackBuilding() {
         glPopMatrix();
     }
 
-
     //wall rows
     drawCube(-10, 5, -6.5, 26, 0.5, 4, 0, 0.000, 0.000);
     drawCube(-10, 3.5, -6.5, 26, 1, 4, 0, 0.000, 0.000);
@@ -606,6 +603,83 @@ void drawBackBuilding() {
     glPopMatrix();
 }
 
+void drawInnerRightMiddleBuilding() {
+    glPushMatrix();
+    //inner right middle
+    //12.5
+    for (GLint i = 0; i > -13; i -= 4) {
+        glPushMatrix();
+        glTranslatef(0.0, 0.0, i);
+        drawCube(9, 3, 6, 6, 3, 2, 0, 0, 0);
+        glPopMatrix();
+    }
+
+    //wall rows
+    drawCube(9, 3.5, 6, 6, 1, 12.5, 0, 0.000, 0.000);
+    drawCube(9, 0.5, 6, 6, 0.5, 12.5, 0, 0.000, 0.000);
+
+    //windows
+    drawCube(9.2, 2.5, 6, 5.899, 2, 12.5, 0.412, 0.412, 0.412);
+    glPopMatrix();
+}
+
+void drawBalcony() {
+    glPushMatrix();
+    //balcony
+    for (GLint i = 0; i < 12; i += 2) {
+        glPushMatrix();
+        glTranslatef(i, 0.0, 0.0);
+        drawCube(-5, 3.1, 4.2, 0.1, -0.95, 0.1, 0.1, 0.0, 0.1);
+        glPopMatrix();
+    }
+    drawCube(-5, 3.6, 4.2, 10, 0.2, 0.2, 0.100, 0.100, 0.000);
+    drawCube(-7, 3.1, 6, 16, 0.2, 2, 0.502, 0.100, 0.000);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.0, 0.0, -10.0);
+    for (GLint i = 0; i < 14; i += 2) {
+        glPushMatrix();
+        glTranslatef(i, 0.0, 0.0);
+        drawCube(-5, 3.1, 6, 0.1, -0.95, 0.1, 0.1, 0.0, 0.1);
+        glPopMatrix();
+    }
+    drawCube(-5, 3.6, 6, 12, 0.2, 0.2, 0.100, 0.100, 0.000);
+    drawCube(-7, 3.1, 6, 16, 0.2, 2, 0.502, 0.100, 0.000);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-11.0, 0.0, 0.0);
+    glRotatef(90.0, 0.0, 1.0, 0.0);
+    for (GLint i = 2; i < 10; i += 2) {
+        glPushMatrix();
+        glTranslatef(i, 0.0, 0.0);
+        drawCube(-5, 3.1, 6, 0.1, -1.6, 0.1, 0.1, 0.0, 0.1);
+        glPopMatrix();
+    }
+
+    drawCube(-4, 3.6, 6, 8, 0.2, 0.2, 0.100, 0.100, 0.000);
+    drawCube(-7, 3.1, 6, 16, 0.2, 2, 0.502, 0.100, 0.000);
+    glPopMatrix();
+}
+
+void drawStairs(){
+    glPushMatrix();
+    glTranslatef(3.0, 0.0, 4.0);
+    glRotatef(90.0, 0.0, 1.0, 0.0);
+    for (GLint i = 0; i < 4; i++) {
+        glPushMatrix();
+        glTranslatef(0.0, i, i);
+        drawCube(0.0, 0.0, 0.0, 2.0, 0.2, 1.0, 0.0, 0.0, 0.0);
+        glPopMatrix();
+    }
+    glPushMatrix();
+    glTranslatef(0.0, 3, 6);
+    drawCube(0.0, 0.0, 0.0, 2.0, 0.2, 3.0, 0.0, 0.0, 0.0);
+    glPopMatrix();
+    glPopMatrix();
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);      // Depth Buffer should be cleared everytime a redraw happens
     
@@ -621,21 +695,16 @@ void display() {
     glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
 
     drawRightBuilding();
-    //drawRightSideCornerBuilding();
+    drawRightSideCornerBuilding();
     drawMiddleRightSideBuilding();
-    //drawFrontMiddleBuilding();
-    //drawFrontLeftBuilding();
-    //drawLefttBuilding();
+    drawFrontMiddleBuilding();
+    drawFrontLeftBuilding();
+    drawLefttBuilding();
     drawBackBuilding();
-   
-    //inner right middle
-    //12.5
-    for (GLint i = 0; i > -13; i -= 4) {
-        glPushMatrix();
-        glTranslatef(0.0, 0.0, i);
-        drawCube(9, 3, 6, 6, 3, 2, 0, 0, 0);
-        glPopMatrix();
-    }
+    drawInnerRightMiddleBuilding();
+    drawBalcony();
+    drawStairs();
+
 
     if(showGrid)
         drawGrid(); //draw the grids
