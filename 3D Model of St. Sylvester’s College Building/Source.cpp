@@ -24,6 +24,10 @@ GLfloat camX = 0.0f;
 GLfloat camY = 0.0f;
 GLfloat camZ = 0.0f;
 
+//variables for show grid and axes
+GLboolean showGrid = false;
+GLboolean showAxes = false;
+
 
 void initLighting() {
     GLfloat L0_Ambient[] = { 0.2, 0.2, 0.2, 1.0 };
@@ -123,16 +127,16 @@ void drawGrid() {
 void keyboardSpecial(int key, int x, int y) {
     if (key == GLUT_KEY_UP)
         moveZ += 1;
-
     if (key == GLUT_KEY_DOWN)
         moveZ -= 1;
-
     if (key == GLUT_KEY_LEFT)
         rotY -= 5.0;
-
     if (key == GLUT_KEY_RIGHT)
         rotY += 1.0;
-
+    if (key == GLUT_KEY_F2)
+        showAxes = !showAxes;
+    if (key == GLUT_KEY_F3)
+        showGrid = !showGrid;
     glutPostRedisplay();
 }
 
@@ -148,7 +152,7 @@ void keyboard(unsigned char key, int x, int y) {
     if (key == 'C')
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        if (key == 'k')
+    if (key == 'k')
         glDisable(GL_LIGHT0);
     if (key == 'K')
         glEnable(GL_LIGHT0);
@@ -420,9 +424,6 @@ void drawMiddleRightSideBuilding(){
     drawCube(5.5, 3.5, 10, 9.5, 1, 4, 0, 0, 0);
     drawCube(5.5, 0.5, 10, 9.5, 0.5, 4, 0, 0, 0);
 
-    //inner right middle
-    drawCube(9, 3, 6, 6, 3, 12.5, 0, 0, 0);
-
     //windows
     drawCube(5.501, 5, 9.8, 9.498, 1.5, 3.6, 0.412, 0.412, 0.412);
     drawCube(5.501, 2.5, 9.8, 9.498, 2, 3.6, 0.412, 0.412, 0.412);
@@ -465,13 +466,153 @@ void drawFrontMiddleBuilding() {
 
 }
 
+void drawFrontLeftBuilding() {
+    glPushMatrix();
+    //columns
+    drawCube(-9, 5, 10, 0.5, 5, 4, 0, 0.000, 0.000);
+    drawCube(-11, 5, 10, 0.5, 5, 4, 0, 0.000, 0.000);
+
+    //wall rows
+    drawCube(-11, 5, 10, 5, 0.5, 4, 0, 0.000, 0.000);
+    drawCube(-11, 3.5, 10, 5, 1, 4, 0, 0.000, 0.000);
+    drawCube(-11, 0.5, 10, 5, 0.5, 4, 0, 0.000, 0.000);
+
+    //small line
+    drawCube(-11, 3.1, 10.2, 5, 0.2, 0.2, 0.502, 0.000, 0.000);
+
+    //windows
+    drawCube(-10.99, 4.5, 9.8, 3.899, 1, 3.5, 0.412, 0.412, 0.412);
+    drawCube(-10.99, 4.5, 9.8, 3.899, 1, 3.5, 0.412, 0.412, 0.412);
+    drawCube(-10.49, 2.5, 9.8, 3.899, 2, 3.5, 0.412, 0.412, 0.412);
+
+    //wall side traingle part
+    glBegin(GL_POLYGON);
+    glColor3f(0.871, 0.722, 0.529);
+    glVertex3f(-11, 5, 10);
+    glVertex3f(-11, 6, 8);
+    glVertex3f(-11, 5, 6);
+    glEnd();
+
+    //roof
+    glPushMatrix();
+    glBegin(GL_POLYGON);
+    glColor3f(0.412, 0.412, 0.412);
+    glVertex3f(-12, 4.75, 10.5);
+    glVertex3f(-12, 6, 8);
+    glVertex3f(5, 6, 8);
+    glVertex3f(5, 4.75, 10.5);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.412, 0.412, 0.412);
+    glVertex3f(-11, 6, 8);
+    glVertex3f(-11, 4, 4);
+    glVertex3f(5, 4, 4);
+    glVertex3f(5, 6, 8);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.412, 0.412, 0.412);
+    glVertex3f(-12, 6, 8);
+    glVertex3f(-12, 5, 6);
+    glVertex3f(-11, 5, 6);
+    glVertex3f(-11, 6, 8);
+    glEnd();
+    glPopMatrix();
+
+    glPopMatrix();
+}
+
+void drawLefttBuilding() {
+    glPushMatrix();
+    for (GLint i = 0; i > -18; i -= 2) {
+        glPushMatrix();
+        glTranslatef(0.0, 0.0, i);
+        drawCube(-11, 5, 6, 4, 5, 0.5, 0, 0, 0);//right
+        glPopMatrix();
+    }
+
+    //wall rows
+    drawCube(-11, 5, 6, 4, 0.5, 16, 0, 0.000, 0.000);
+    drawCube(-11, 3.5, 6, 4, 1, 16, 0, 0.000, 0.000);
+    drawCube(-11, 0.5, 6, 4, 0.5, 16, 0, 0.000, 0.000);
+
+    //small line
+    drawCube(-11.2, 3.1, 10.2, 0.2, 0.2, 20.2, 0.502, 0.000, 0.000);
+
+    //windows
+    drawCube(-10.9, 4.5, 5.8, 3.899, 1, 15.899, 0.412, 0.412, 0.412);
+    drawCube(-10.9, 2.5, 5.8, 3.899, 2, 15.899, 0.412, 0.412, 0.412);
+
+    //roof
+    glPushMatrix();
+    glBegin(GL_POLYGON);
+    glColor3f(0.412, 0.412, 0.412);
+    glVertex3f(-11, 5, 6);
+    glVertex3f(-9.5, 6, 8.5);
+    glVertex3f(-9.5, 6, -8.5);
+    glVertex3f(-11, 5, -7);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.412, 0.412, 0.412);
+    glVertex3f(-9.5, 6, 8.5);
+    glVertex3f(-5, 4.75, 6);
+    glVertex3f(-5, 4.75, -7);
+    glVertex3f(-9.5, 6, -8.5);
+    glEnd();
+    glPopMatrix();
+
+    glPopMatrix();
+}
+
+void drawBackBuilding() {
+    glPushMatrix();
+    for (GLint i = 0; i < 28; i += 2) {
+        glPushMatrix();
+        glTranslatef(i, 0.0, 0.0);
+        drawCube(-10, 5, -6.5, 0.5, 5, 4, 0, 0, 0);//back
+        glPopMatrix();
+    }
+
+
+    //wall rows
+    drawCube(-10, 5, -6.5, 26, 0.5, 4, 0, 0.000, 0.000);
+    drawCube(-10, 3.5, -6.5, 26, 1, 4, 0, 0.000, 0.000);
+    drawCube(-10, 0.5, -6.5, 26, 0.5, 4, 0, 0.000, 0.000);
+
+    //windows
+    drawCube(-10.9, 4.5, -6.6, 27, 1, 3.899, 0.412, 0.412, 0.412);
+    drawCube(-10.9, 2.5, -6.6, 27, 2, 3.899, 0.412, 0.412, 0.412);
+
+    //roof
+    glPushMatrix();
+    glBegin(GL_POLYGON);
+    glColor3f(0.412, 0.412, 0.412);
+    glVertex3f(-11, 4.5, -11.5);
+    glVertex3f(-11, 6, -8.5);
+    glVertex3f(18, 6, -8.5);
+    glVertex3f(18, 4.5, -11.5);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3f(0.412, 0.412, 0.412);
+    glVertex3f(-11, 6, -8.5);
+    glVertex3f(-11, 4, -4);
+    glVertex3f(18, 4, -4);
+    glVertex3f(18, 6, -8.5);
+    glEnd();
+    glPopMatrix();
+    glPopMatrix();
+}
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);      // Depth Buffer should be cleared everytime a redraw happens
     
     glPushMatrix();
 
     //camera position
-    gluLookAt(0.0 + camX, 30.0 + camY, 30.0 + camZ, 0, 0, 0, 0, 1.0, 0);
+    gluLookAt(0.0 + camX, 20.0 + camY, 30.0 + camZ, 0, 0, 0, 0, 1.0, 0);
 
     // move the object frame using keyboard keys
     glTranslatef(moveX, moveY, moveZ);
@@ -479,24 +620,27 @@ void display() {
     glRotatef(rotY, 0.0f, 1.0f, 0.0f);
     glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
 
-
-    
     drawRightBuilding();
-    drawRightSideCornerBuilding();
+    //drawRightSideCornerBuilding();
     drawMiddleRightSideBuilding();
-    drawFrontMiddleBuilding();
+    //drawFrontMiddleBuilding();
+    //drawFrontLeftBuilding();
+    //drawLefttBuilding();
+    drawBackBuilding();
+   
+    //inner right middle
+    //12.5
+    for (GLint i = 0; i > -13; i -= 4) {
+        glPushMatrix();
+        glTranslatef(0.0, 0.0, i);
+        drawCube(9, 3, 6, 6, 3, 2, 0, 0, 0);
+        glPopMatrix();
+    }
 
-
-    
-    //drawCube(5, 5, 6, 4, 5, 12.5, 0, 0, 0);//inner left middle
-    //drawCube(-10, 5, 10, 4, 5, 16.5, 0, 0, 0);//right
-    //drawCube(-10, 5, -6.5, 19, 5, 4, 0, 0, 0);//back
-    
-
-
-
-    drawGrid(); //draw the grids
-    drawAxes(); //draw the xyz axes
+    if(showGrid)
+        drawGrid(); //draw the grids
+    if(showAxes)
+        drawAxes(); //draw the xyz axes
 
     glPopMatrix();                 
     glutSwapBuffers();
@@ -513,8 +657,6 @@ void changeSize(GLsizei w, GLsizei h) {
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-
 }
 
 int main(int argc, char** argv) {
@@ -524,18 +666,13 @@ int main(int argc, char** argv) {
     glutInitWindowSize(1500, 1500);
     glutInitWindowPosition(150, 150);
     glutCreateWindow("St. Sylvester's College Building");
-    glutDisplayFunc(display);
 
+    glutDisplayFunc(display);
     glutReshapeFunc(changeSize);    
-    
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(keyboardSpecial);
     init();
     glutMainLoop();
 
-
     return 0;
 }
-
-
-
