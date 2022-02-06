@@ -35,7 +35,7 @@ GLfloat camZ = 0.0f;
 GLboolean showGrid = false;
 GLboolean showAxes = false;
 
-static unsigned int texture[2];
+static unsigned int texture[4];
 
 BitMapFile* getbmp(string filename) {
     int offset, headerSize;
@@ -90,16 +90,20 @@ BitMapFile* getbmp(string filename) {
 }
 
 void loadExternalTextures() {
-    BitMapFile* image[2];
-    image[0] = getbmp("textures/roof.bmp");
+    BitMapFile* image[4];
+    image[0] = getbmp("textures/roof3.bmp");
+    image[1] = getbmp("textures/roof4.bmp");
+    image[2] = getbmp("textures/floor.bmp");
+    image[3] = getbmp("textures/grass.bmp");
 
-    glBindTexture(GL_TEXTURE_2D, texture[0]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image[0]->sizeX, image[0]->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image[0]->data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
+    for (GLint i = 0; i < 4; i++) {
+        glBindTexture(GL_TEXTURE_2D, texture[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image[i]->sizeX, image[i]->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image[i]->data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 }
 
 
@@ -107,9 +111,7 @@ void initLighting() {
     GLfloat L0_Ambient[] = { 0.2, 0.2, 0.2, 1.0 };
     GLfloat L0_Diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
     GLfloat L0_Specular[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat L0_postion[] = { 125, 125, 0, 1.0 };
-    //GLfloat L0_SpotDirection[] = { 0.0, -1.0, -1.0 };
-
+    GLfloat L0_postion[] = { 200, 200, 200, 1.0 };
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, L0_Ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, L0_Diffuse);
@@ -130,25 +132,18 @@ void init() {
     glOrtho(-1, 1, -1, 1, -3.0, 3.0);
     
     glEnable(GL_DEPTH_TEST);
-
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
-    glEnable(GL_LIGHTING);
 
-    glShadeModel(GL_SMOOTH);
-
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
-
-    (GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glGenTextures(3, texture);
+    loadExternalTextures();
 
     initLighting();
+    glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHTING);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
     glEnable(GL_COLOR_MATERIAL);
-
-    glEnable(GL_LIGHT0);
-
-    glGenTextures(2, texture);
-    loadExternalTextures();
-    glEnable(GL_TEXTURE_2D);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     glEnable(GL_NORMALIZE);
 }
@@ -215,6 +210,7 @@ void keyboardSpecial(int key, int x, int y) {
         showAxes = !showAxes;
     if (key == GLUT_KEY_F3)
         showGrid = !showGrid;
+
     glutPostRedisplay();
 }
 
@@ -235,9 +231,7 @@ void keyboard(unsigned char key, int x, int y) {
     if (key == 'K')
         glEnable(GL_LIGHT0);
 
-
     glutPostRedisplay();
-
 }
 
 
@@ -356,9 +350,7 @@ void drawHexagonalPrism(GLfloat x[], GLfloat z[], GLfloat y, GLfloat h){
     for (int i = 0; i < 6; ++i)
         glVertex3f(x[i], y + h, z[i]);
     glEnd();
-
 }
-
 
 void drawRightBuilding() {
     glPushMatrix();
@@ -539,10 +531,11 @@ void drawFrontMiddleBuilding() {
     drawCube(-7, 3.1, 10.2, 12, 0.2, 0.2, 0.502, 0.000, 0.000);
 
     glPopMatrix();
-
 }
 
+
 void drawFrontLeftBuilding() {
+    glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     //columns
     drawCube(-9, 5, 10, 0.5, 5, 4, 0, 0.000, 0.000);
@@ -563,6 +556,7 @@ void drawFrontLeftBuilding() {
 
     //wall side traingle part
     glBegin(GL_POLYGON);
+    glNormal3f(0.0, 0.0, 1.0);
     glColor3f(0.871, 0.722, 0.529);
     glVertex3f(-11, 5, 10);
     glVertex3f(-11, 6, 8);
@@ -571,35 +565,33 @@ void drawFrontLeftBuilding() {
 
     //roof
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
     glBegin(GL_POLYGON);
-    glColor3f(0.412, 0.412, 0.412);
-    glVertex3f(-12, 4.75, 10.5);
-    glVertex3f(-12, 6, 8);
-    glVertex3f(5, 6, 8);
-    glVertex3f(5, 4.75, 10.5);
+    glNormal3f(0.0, 0.0, 1.0);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-11, 4.75, 10.5);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-11, 6, 8);
+    glTexCoord2f(1.0, 1.0); glVertex3f(5, 6, 8);
+    glTexCoord2f(1.0, 0.0); glVertex3f(5, 4.75, 10.5);
     glEnd();
+    glPopMatrix();
 
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
     glBegin(GL_POLYGON);
-    glColor3f(0.412, 0.412, 0.412);
-    glVertex3f(-11, 6, 8);
-    glVertex3f(-11, 4, 4);
-    glVertex3f(5, 4, 4);
-    glVertex3f(5, 6, 8);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glColor3f(0.412, 0.412, 0.412);
-    glVertex3f(-12, 6, 8);
-    glVertex3f(-12, 5, 6);
-    glVertex3f(-11, 5, 6);
-    glVertex3f(-11, 6, 8);
+    glNormal3f(0.0, 0.0, 1.0);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-11, 6, 8);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-11, 4, 4);
+    glTexCoord2f(1.0, 1.0); glVertex3f(5, 4, 4);
+    glTexCoord2f(1.0, 0.0); glVertex3f(5, 6, 8);
     glEnd();
     glPopMatrix();
 
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void drawLefttBuilding() {
+    glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     for (GLint i = 0; i > -18; i -= 2) {
         glPushMatrix();
@@ -619,30 +611,36 @@ void drawLefttBuilding() {
     //windows
     drawCube(-10.9, 4.5, 5.8, 3.899, 1, 15.899, 0.412, 0.412, 0.412);
     drawCube(-10.9, 2.5, 5.8, 3.899, 2, 15.899, 0.412, 0.412, 0.412);
-
+    
     //roof
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glNormal3f(0.0, 0.0, 1.0);
     glBegin(GL_POLYGON);
-    glColor3f(0.412, 0.412, 0.412);
-    glVertex3f(-11, 5, 6);
-    glVertex3f(-9.5, 6, 8.5);
-    glVertex3f(-9.5, 6, -8.5);
-    glVertex3f(-11, 5, -7);
-    glEnd();
-
-    glBegin(GL_POLYGON);
-    glColor3f(0.412, 0.412, 0.412);
-    glVertex3f(-9.5, 6, 8.5);
-    glVertex3f(-5, 4.75, 6);
-    glVertex3f(-5, 4.75, -7);
-    glVertex3f(-9.5, 6, -8.5);
+    glTexCoord2f(0.0, 0.0);  glVertex3f(-11, 5, 6);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-9.5, 6, 8.5);
+    glTexCoord2f(1.0, 1.0); glVertex3f(-9.5, 6, -8.5);
+    glTexCoord2f(1.0, 0.0); glVertex3f(-11, 5, -7);
     glEnd();
     glPopMatrix();
 
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    glBegin(GL_POLYGON);
+    glNormal3f(0.0, 0.0, 1.0);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-9.5, 6, 8.5);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-5, 4.75, 6);
+    glTexCoord2f(1.0, 1.0); glVertex3f(-5, 4.75, -7);
+    glTexCoord2f(1.0, 0.0); glVertex3f(-9.5, 6, -8.5);
+    glEnd();
     glPopMatrix();
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 }
 
+
 void drawBackBuilding() {
+    glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     for (GLint i = 0; i < 28; i += 2) {
         glPushMatrix();
@@ -662,23 +660,29 @@ void drawBackBuilding() {
 
     //roof
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
     glBegin(GL_POLYGON);
-    glColor3f(0.412, 0.412, 0.412);
-    glVertex3f(-11, 4.5, -11.5);
-    glVertex3f(-11, 6, -8.5);
-    glVertex3f(18, 6, -8.5);
-    glVertex3f(18, 4.5, -11.5);
+    glNormal3f(0.0, 0.0, 1.0);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-11, 4.5, -11.5);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-11, 6, -8.5);
+    glTexCoord2f(1.0, 1.0); glVertex3f(18, 6, -8.5);
+    glTexCoord2f(1.0, 0.0); glVertex3f(18, 4.5, -11.5);
     glEnd();
+    glPopMatrix();
 
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, texture[1]);
     glBegin(GL_POLYGON);
-    glColor3f(0.412, 0.412, 0.412);
-    glVertex3f(-11, 6, -8.5);
-    glVertex3f(-11, 4, -4);
-    glVertex3f(18, 4, -4);
-    glVertex3f(18, 6, -8.5);
+    glNormal3f(0.0, 0.0, 1.0);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-11, 6, -8.5);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-11, 4, -4);
+    glTexCoord2f(1.0, 1.0); glVertex3f(18, 4, -4);
+    glTexCoord2f(1.0, 0.0); glVertex3f(18, 6, -8.5);
     glEnd();
     glPopMatrix();
+
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 }
 
 void drawInnerRightMiddleBuilding() {
@@ -772,35 +776,52 @@ void display() {
     glRotatef(rotY, 0.0f, 1.0f, 0.0f);
     glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
 
-    //drawRightBuilding();
-    //drawRightSideCornerBuilding();
-    //drawMiddleRightSideBuilding();
-    //drawFrontMiddleBuilding();
-    //drawFrontLeftBuilding();
-    //drawLefttBuilding();
-    //drawBackBuilding();
-    //drawInnerRightMiddleBuilding();
-    //drawBalcony();
-    //drawStairs();
+    drawRightBuilding();
+    drawRightSideCornerBuilding();
+    drawMiddleRightSideBuilding();
+    drawFrontMiddleBuilding();
+    drawFrontLeftBuilding();
+    drawLefttBuilding();
+    drawBackBuilding();
+    drawInnerRightMiddleBuilding();
+    drawBalcony();
+    drawStairs();
 
+    //floor
+    glEnable(GL_TEXTURE_2D);
     glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, texture[0]);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 0.0); glVertex3f(1, 0, 0);
-    glTexCoord2f(1.0, 0.0); glVertex3f(10, 0, 0);
-    glTexCoord2f(1.0, 1.0); glVertex3f(10, 0, -10);
-    glTexCoord2f(0.0, 1.0); glVertex3f(1,0, -10);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glBindTexture(GL_TEXTURE_2D, texture[2]);
+    glBegin(GL_POLYGON);
+    glTexCoord2f(0.0, 0.0); glVertex3f(-12, 0, 13);
+    glTexCoord2f(0.0, 1.0); glVertex3f(-12, 0, -12);
+    glTexCoord2f(1.0, 1.0); glVertex3f(20, 0, -12);
+    glTexCoord2f(1.0, 0.0); glVertex3f(20, 0, 13);
     glEnd();
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 
-    ////floor
-    //drawCube(-12, 0.0, 13, 32, 0.2, 25, 0, 0, 0);
+    drawCube(-12, -0.0009, 13, 32, 0.2, 25, 0, 0, 0);
 
-    ////courtyard
-    //glPushMatrix();
-    //glTranslatef(-5, 0, 5);
-    //drawCube(0, 0.3, 0, 5, 0.3, 10, 1, 0.0, 0.0);
-    //glPopMatrix();
+    //courtyard
+    glPushMatrix();
+    glTranslatef(-5, 0, 5);
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glBindTexture(GL_TEXTURE_2D, texture[3]);
+    glBegin(GL_POLYGON);
+    glNormal3f(0.0, 0.0, 1.0);
+    glTexCoord2f(0.0, 0.0); glVertex3f(0, 0.3, 0);
+    glTexCoord2f(0.0, 1.0); glVertex3f(0, 0.3, -10);
+    glTexCoord2f(1.0, 1.0); glVertex3f(5, 0.3, -10);
+    glTexCoord2f(1.0, 0.0); glVertex3f(5, 0.3, 0);
+    glEnd();
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+
+    drawCube(0, 0.209, 0, 5, 0.3, 10, 0.0, 1, 0.0);
+    glPopMatrix();
 
     if(showGrid)
         drawGrid(); //draw the grids
