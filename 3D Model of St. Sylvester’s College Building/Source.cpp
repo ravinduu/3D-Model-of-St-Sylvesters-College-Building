@@ -820,7 +820,7 @@ void display() {
     glPopMatrix();
     glDisable(GL_TEXTURE_2D);
 
-    drawCube(0, 0.209, 0, 5, 0.3, 10, 0.0, 1, 0.0);
+    drawCube(0, 0.209, 0, 5, 0.3, 10, 0.0, 0, 1.0);
     glPopMatrix();
 
     if(showGrid)
